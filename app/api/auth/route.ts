@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     const { data, error } = await supabase
       .from("auth")
       .select("password")
-      .eq("user_name", username)
+      .eq("user", username)
       .single();
 
     if (error || !data) {
