@@ -8,5 +8,11 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
+  const auth_session = req.cookies.get("auth_session")?.value;
+
+  if (!auth_session && req.nextUrl.pathname.startsWith("/teacher")) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
   return NextResponse.next();
 }

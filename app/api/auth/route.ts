@@ -19,12 +19,21 @@ export async function POST(request: Request) {
 
     const isValid = await argon2.verify(data.password, password);
     const cookieStore = await cookies();
-    cookieStore.set("session", "logged-in", {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-      path: "/",
-    });
+    if (username == "admin") {
+      cookieStore.set("session", "logged-in", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+      });
+    } else {
+      cookieStore.set("auth_session", "logged-in", {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+        path: "/",
+      });
+    }
 
     return NextResponse.json({ auth: isValid });
   } catch {
