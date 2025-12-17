@@ -13,7 +13,7 @@ export default function NewCandidatePage() {
   const [name, setName] = useState("");
   const [grade, setGrade] = useState("");
 
-  const [role_, setRole_] = useState("");
+  const [role_, setRole_] = useState(allRoles[0]);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   async function add_votes_list(name: string, role: string, grade: number) {
