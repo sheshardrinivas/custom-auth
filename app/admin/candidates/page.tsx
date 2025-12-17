@@ -18,8 +18,14 @@ export default function Admin() {
         }
       });
   }
-
-  const [data, setData] = useState([]);
+  interface CandidatesProps {
+    id: number;
+    name: string;
+    grade: number;
+    role: string;
+    image: string;
+  }
+  const [data, setData] = useState<CandidatesProps[]>([]);
 
   // async function getUserData(query: string) {
   //   const { data } = await supabase
@@ -43,15 +49,9 @@ export default function Admin() {
 
     return data || [];
   };
-  interface CandidatesProps {
-    id: number;
-    name: string;
-    grade: number;
-    role: string;
-    image: string;
-  }
+
   useEffect(() => {
-    getCandidates().then((candidates: CandidatesProps[]) => {
+    getCandidates().then((candidates) => {
       setData(candidates);
     });
   }, [currentRole]);
