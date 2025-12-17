@@ -56,13 +56,20 @@ export default function Results() {
   return (
     <div className="flex h-screen w-screen bg-gray-900 text-amber-100">
       <div className="flex flex-col items-center w-64 bg-gray-800 p-6 gap-6">
-        <button
-          className="text-4xl hover:text-amber-300 transition-colors"
-          onClick={() => router.push("/admin/new_candidate")}
-        >
-          ➣
-        </button>
-
+        <span className=" flex flex-row gap-8">
+          <button
+            className="text-4xl hover:text-amber-300 transition-colors rotate-180"
+            onClick={() => router.push("/admin/candidates")}
+          >
+            ➣
+          </button>
+          <button
+            className="text-4xl hover:text-amber-300 transition-colors "
+            onClick={() => router.push("/admin/new_candidate")}
+          >
+            ➣
+          </button>
+        </span>
         <h1 className="text-2xl font-bold text-center">Results</h1>
         <p className="mt-4 font-medium">Total Votes: {totalVotes}</p>
       </div>
@@ -73,7 +80,7 @@ export default function Results() {
             const percentage = totalVotes ? (c.votes / totalVotes) * 100 : 0;
             return (
               <div
-                key={`${c.name}-${c.role}`}
+                key={`${c.name}`}
                 className="w-full max-w-3xl px-4 py-3 mb-2 rounded-md border border-amber-400/30
                            bg-amber-400/10 flex items-center gap-4"
               >

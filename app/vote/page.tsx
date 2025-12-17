@@ -1,15 +1,19 @@
 "use client";
+import { gsap } from "gsap";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/app/lib/supabase";
 import Image from "next/image";
+import { allRoles } from "@/app/lib/role";
+import { useGSAP } from "@gsap/react";
 
-const allRoles = ["headboy", "the biggest brid"];
-
+gsap.registerPlugin(useGSAP);
 export default function VotingUI() {
   const [candidates, setCandidates] = useState<any[]>([]);
   const [currentRole, setCurrentRole] = useState(allRoles[0]);
+  const [voted, setVoted] = useState<boolean>(false);
 
+  useGSAP(() => {});
   const getCandidates = async () => {
     const { data, error } = await supabase
       .from("candidates")
@@ -23,7 +27,7 @@ export default function VotingUI() {
 
     return data || [];
   };
-  async function get_current_votes(name, role) {
+  async function get_current_votes(name: string, role: string) {
     const { data, error } = await supabase
       .from("votes")
       .select("votes")
@@ -69,7 +73,10 @@ export default function VotingUI() {
 
         <select
           value={currentRole}
-          onChange={(e) => setCurrentRole(e.target.value)}
+          onChange={(e) => {
+            setCurrentRole(e.target.value);
+            setVoted(false);
+          }}
           className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
         >
           {allRoles.map((role) => (
@@ -78,11 +85,11 @@ export default function VotingUI() {
         </select>
       </div>
 
-      <div className="flex-1 p-6 overflow-y-scroll flex flex-col items-center gap-4">
+      <div className="flex-1  p-4 overflow-y-scroll flex flex-col items-center gap-4">
         {candidates.map((c) => (
           <div
             key={c.id}
-            className="w-full max-w-3xl px-4 py-3 mb-2 rounded-md border border-amber-400/30
+            className="w-full max-w-6xl px-4 py-8 mb-2 rounded-md border border-amber-400/30
                        bg-amber-400/10 hover:bg-amber-400/20 transition-colors
                        flex items-center gap-4"
           >
@@ -107,8 +114,14 @@ export default function VotingUI() {
             </div>
 
             <button
-              className="px-4 py-2 rounded-md bg-amber-400 hover:bg-amber-500 text-gray-900 transition-colors"
-              onClick={() => vote(c.name, c.role)}
+              disabled={voted}
+              className="px-4 py-2  font-bold rounded-md bg-slate-300 hover:bg-slate-400 text-gray-900 transition-colors"
+              key={c.name + c.role}
+              onClick={() => {
+                vote(c.name, c.role);
+                alert("Vote successful!");
+                setVoted(true);
+              }}
             >
               Vote
             </button>

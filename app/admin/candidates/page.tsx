@@ -1,12 +1,14 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
-import { useState } from "react";
+import { useState, useEffect, SetStateAction } from "react";
 import Image from "next/image";
+import { allRoles } from "@/app/lib/role";
 
 export default function Admin() {
   const router = useRouter();
 
+  const [currentRole, setCurrentRole] = useState(allRoles[0]);
   function logout() {
     fetch("/api/logout", { method: "POST" })
       .then((response) => response.json())
@@ -19,37 +21,62 @@ export default function Admin() {
 
   const [data, setData] = useState([]);
 
-  async function getUserData(query: string) {
-    const { data } = await supabase
+  // async function getUserData(query: string) {
+  //   const { data } = await supabase
+  //     .from("candidates")
+  //     .select("*")
+  //     .eq("role", query);
+
+  //   setData(data);
+  // }
+  const getCandidates = async () => {
+    console.log(currentRole);
+    const { data, error } = await supabase
       .from("candidates")
       .select("*")
-      .eq("role", query);
+      .eq("role", currentRole);
 
-    setData(data);
+    if (error) {
+      console.error("Error fetching candidates:", error);
+      return [];
+    }
+
+    return data || [];
+  };
+  interface CandidatesProps {
+    id: number;
+    name: string;
+    grade: number;
+    role: string;
+    image: string;
   }
+  useEffect(() => {
+    getCandidates().then((candidates: CandidatesProps[]) => {
+      setData(candidates);
+    });
+  }, [currentRole]);
 
   return (
     <div className="flex h-screen w-screen bg-gray-900">
       <div className="flex flex-col items-center w-56 bg-gray-800 text-amber-100 p-4 gap-6">
-        <button
-          className="text-4xl hover:text-amber-300 transition-colors"
-          onClick={logout}
-        >
-          ➣
-        </button>
+        <span className=" flex flex-row gap-8">
+          <button
+            className="text-4xl hover:text-amber-300 transition-colors rotate-180"
+            onClick={logout}
+          >
+            ➣
+          </button>
+          <button
+            className="text-4xl hover:text-amber-300 transition-colors "
+            onClick={() => router.push("/admin/results")}
+          >
+            ➣
+          </button>
+        </span>
 
         <h1 className="text-xl font-semibold text-center">Candidates List</h1>
 
-        <button
-          onClick={() => router.push("/admin/results")}
-          className="px-4 py-2 rounded-md border border-amber-400/40
-                     bg-amber-400/10 text-amber-100
-                     hover:bg-amber-400/20 transition-colors w-full text-center"
-        >
-          View Results
-        </button>
-
-        <input
+        {/*<input
           type="text"
           placeholder="Search"
           className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full outline-none focus:outline-none focus:ring-0 text-white placeholder-gray-400"
@@ -59,7 +86,16 @@ export default function Admin() {
               getUserData(query);
             }
           }}
-        />
+        />*/}
+        <select
+          value={currentRole}
+          onChange={(e) => setCurrentRole(e.target.value)}
+          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+        >
+          {allRoles.map((role) => (
+            <option key={role}>{role}</option>
+          ))}
+        </select>
       </div>
 
       <div className="flex-1 p-6 overflow-y-scroll">
