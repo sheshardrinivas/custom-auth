@@ -20,7 +20,7 @@ export default function Home() {
     });
     const data = await response.json();
     if (data?.auth) {
-      if (data.username === "admin") {
+      if (name.current?.value === "admin") {
         router.push("/admin/candidates");
       } else {
         router.push("/teacher/new_candidate");
