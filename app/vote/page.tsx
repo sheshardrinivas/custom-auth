@@ -12,8 +12,25 @@ export default function VotingUI() {
   const [candidates, setCandidates] = useState<any[]>([]);
   const [currentRole, setCurrentRole] = useState(allRoles[0]);
   const [voted, setVoted] = useState<boolean>(false);
+  const name_input = useRef<HTMLInputElement>(null);
+  const grade = useRef<HTMLInputElement>(null);
+  const section = useRef<HTMLInputElement>(null);
 
-  useGSAP(() => {});
+  useGSAP(() => {
+    gsap.to(".input", {
+      duration: 0.4,
+      opacity: 1,
+      width: "100%",
+      stagger: 0.2,
+    });
+    gsap.to(".text", {
+      duration: 0.4,
+      opacity: 1,
+
+      stagger: 0.2,
+      delay: 0.5,
+    });
+  });
   const getCandidates = async () => {
     const { data, error } = await supabase
       .from("candidates")
@@ -36,13 +53,36 @@ export default function VotingUI() {
       .single();
     return data?.votes || 0;
   }
+
+  async function does_name_exist() {
+    const { data, error } = await supabase
+      .from("students")
+      .select("voted")
+      .eq("full_name", name_input?.current?.value)
+      .eq("grade", grade?.current?.value)
+      .single();
+    return data?.voted;
+  }
+
   async function vote(name: string, role: string) {
     const current_votes = await get_current_votes(name, role);
-    const { data } = await supabase
-      .from("votes")
-      .update({ votes: current_votes + 1 })
-      .eq("student_name", name)
-      .eq("role", role);
+    const voted_ = await does_name_exist();
+    console.log(voted_);
+    if (!voted_) {
+      await supabase
+        .from("students")
+        .update({ voted: true })
+        .eq("full_name", name_input?.current?.value);
+
+      const { data } = await supabase
+        .from("votes")
+        .update({ votes: current_votes + 1 })
+        .eq("student_name", name)
+        .eq("role", role);
+      alert("Vote successful!");
+    } else {
+      alert("already voted");
+    }
   }
 
   useEffect(() => {
@@ -56,18 +96,21 @@ export default function VotingUI() {
 
         <input
           placeholder="Name"
-          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+          ref={name_input}
+          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 text-white outline-none opacity-0 input"
         />
         <input
           placeholder="Grade"
-          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+          ref={grade}
+          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 text-white outline-none opacity-0 input"
         />
         <input
           placeholder="Section"
-          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+          ref={section}
+          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 text-white outline-none opacity-0 input"
         />
 
-        <p className="text-center font-medium">
+        <p className="text-center font-medium  opacity-0 text">
           Current Role: <span className="text-amber-400">{currentRole}</span>
         </p>
 
@@ -77,7 +120,7 @@ export default function VotingUI() {
             setCurrentRole(e.target.value);
             setVoted(false);
           }}
-          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none text opacity-0 "
         >
           {allRoles.map((role) => (
             <option key={role}>{role}</option>
@@ -119,7 +162,7 @@ export default function VotingUI() {
               key={c.name + c.role}
               onClick={() => {
                 vote(c.name, c.role);
-                alert("Vote successful!");
+
                 setVoted(true);
               }}
             >
