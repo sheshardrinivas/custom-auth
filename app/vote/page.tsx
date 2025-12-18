@@ -1,11 +1,10 @@
 "use client";
 import { gsap } from "gsap";
-
+import { useGSAP } from "@gsap/react";
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/app/lib/supabase";
 import Image from "next/image";
 import { allRoles } from "@/app/lib/role";
-import { useGSAP } from "@gsap/react";
 
 gsap.registerPlugin(useGSAP);
 export default function VotingUI() {
@@ -17,18 +16,25 @@ export default function VotingUI() {
   const section = useRef<HTMLInputElement>(null);
 
   useGSAP(() => {
+    gsap.to(".box", {
+      duration: 0.8,
+      opacity: 1,
+      width: "16rem",
+      stagger: 0.2,
+    });
     gsap.to(".input", {
-      duration: 0.4,
+      duration: 0.6,
       opacity: 1,
       width: "100%",
       stagger: 0.2,
+      delay: 1.0,
     });
     gsap.to(".text", {
       duration: 0.4,
       opacity: 1,
 
       stagger: 0.2,
-      delay: 0.5,
+      delay: 1.8,
     });
   });
   const getCandidates = async () => {
@@ -91,8 +97,10 @@ export default function VotingUI() {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900 text-amber-100">
-      <div className="flex flex-col items-center w-64 bg-gray-800 p-6 gap-6">
-        <h1 className="text-2xl font-bold text-center">Voting</h1>
+      <div className="flex flex-col items-center w-0 opacity-0 bg-gray-800 p-6 gap-6 box">
+        <h1 className="text-2xl font-bold text-center opacity-0 text ">
+          Voting
+        </h1>
 
         <input
           placeholder="Name"
@@ -120,7 +128,7 @@ export default function VotingUI() {
             setCurrentRole(e.target.value);
             setVoted(false);
           }}
-          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none text opacity-0 "
+          className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 text-white outline-none input opacity-0 "
         >
           {allRoles.map((role) => (
             <option key={role}>{role}</option>

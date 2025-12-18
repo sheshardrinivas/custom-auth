@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabase";
 import Image from "next/image";
 import { allRoles } from "@/app/lib/role";
-
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 export default function NewCandidatePage() {
   const router = useRouter();
 
@@ -18,7 +19,28 @@ export default function NewCandidatePage() {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  useGSAP(() => {
+    gsap.to(".box", {
+      duration: 0.8,
+      opacity: 1,
+      width: "18rem",
+      stagger: 0.2,
+    });
+    gsap.to(".input", {
+      duration: 0.6,
+      opacity: 1,
+      width: "100%",
+      stagger: 0.2,
+      delay: 1.0,
+    });
+    gsap.to(".text", {
+      duration: 0.4,
+      opacity: 1,
 
+      stagger: 0.2,
+      delay: 1.8,
+    });
+  });
   async function add_votes_list(name: string, role: string, grade: number) {
     await supabase
       .from("votes")
@@ -117,23 +139,25 @@ export default function NewCandidatePage() {
 
   return (
     <div className="flex h-screen w-screen bg-gray-900 text-amber-100">
-      <div className="flex flex-col w-72 bg-gray-800 p-4 gap-6 relative">
+      <div className="flex flex-col w-0 opacity-0 box bg-gray-800 p-4 gap-6 relative">
         <button
-          className="text-4xl hover:text-amber-300 transition-colors absolute top-4 left-4"
+          className="text-4xl hover:text-amber-300 transition-colors absolute top-4 left-4 opacity-0 text"
           onClick={() => router.push("/admin/candidates")}
         >
           ➣
         </button>
 
         <div className="flex flex-col items-center justify-center h-full gap-4">
-          <h1 className="text-2xl font-bold text-center">Add Candidate</h1>
+          <h1 className="text-2xl font-bold text-center opacity-0 text">
+            Add Candidate
+          </h1>
 
           <input
             type="text"
             placeholder="Name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 opacity-0 text-white outline-none input"
           />
 
           <input
@@ -141,13 +165,13 @@ export default function NewCandidatePage() {
             placeholder="Grade"
             value={grade}
             onChange={(e) => setGrade(e.target.value)}
-            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 opacity-0 text-white outline-none input"
           />
 
           <select
             value={role_}
             onChange={(e) => setRole_(e.target.value)}
-            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 opacity-0 text-white outline-none input"
           >
             {allRoles.map((role) => (
               <option key={role}>{role}</option>
@@ -158,13 +182,13 @@ export default function NewCandidatePage() {
             type="file"
             accept="image/*"
             onChange={handleImageChange}
-            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-full text-white outline-none"
+            className="bg-gray-700 border border-gray-600 rounded-md p-2 w-0 opacity-0 text-white outline-none input"
           />
 
           <button
             onClick={handleSubmit}
             disabled={uploading}
-            className="px-4 py-2 w-full rounded-md bg-amber-400 hover:bg-amber-500 text-gray-900 transition-colors disabled:opacity-50"
+            className="px-4 py-2 w-full text  opacity-0 rounded-md bg-amber-400 hover:bg-amber-500 text-gray-900 transition-colors disabled:opacity-50"
           >
             {uploading ? "Uploading..." : "Add Candidate"}
           </button>
