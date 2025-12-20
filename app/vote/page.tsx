@@ -19,7 +19,7 @@ export default function VotingUI() {
     gsap.to(".box", {
       duration: 0.85,
       opacity: 1,
-      width: "16rem",
+      width: "18rem",
       stagger: 0.2,
     });
     gsap.to(".input", {
